@@ -42,6 +42,10 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
+#window-height = 49
+#window-width = 83
+window-save-state = "always"
+
 font-family = "FiraCode Nerd Font Mono"
 font-size = 14
 
