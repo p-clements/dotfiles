@@ -5,6 +5,13 @@ export PATH="$PYENV_ROOT/bin:$HOME/git-tools:$PATH"
 # ── Pyenv (Python version manager) ────────────────────────────
 eval "$(pyenv init -)"
 
+# ── Upgrade every outdated package in the current pyenv environment
+pip-upgrade-all() {
+  python -m pip list --outdated --format=json \
+    | jq -r '.[].name' \
+    | xargs -n1 python -m pip install --upgrade
+}
+
 # ── Prompt (Starship) ────────────────────────────────────────
 eval "$(starship init zsh)"
 
