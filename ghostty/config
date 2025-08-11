@@ -46,7 +46,7 @@
 #window-width = 83
 window-save-state = "always"
 
-font-family = "FiraCode Nerd Font Mono"
+font-family = "FiraCode Nerd Font"
 font-size = 14
 
 theme = "catppuccin-macchiato"
