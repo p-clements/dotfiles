@@ -49,4 +49,4 @@ window-save-state = "always"
 font-family = "FiraCode Nerd Font"
 font-size = 14
 
-theme = "catppuccin-macchiato"
+theme = "catppuccin-mocha"
