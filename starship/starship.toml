@@ -3,7 +3,7 @@
 ###############################################################################
 # Pick your flavour
 ###############################################################################
-palette = "catppuccin_macchiato"   # latte | frappe | macchiato | mocha
+palette = "catppuccin_mocha"   # latte | frappe | macchiato | mocha
 
 ###############################################################################
 # Prompt layout – left power-line, right command-duration
@@ -83,9 +83,9 @@ style = "fg:subtext1"
 format = "[  $time ]($style)"   
 
 [character]               # ⇦ **only one of these!**
-success_symbol = "[❯](peach)"
-error_symbol   = "[❯](red)"
-vimcmd_symbol  = "[❮](subtext1)"
+success_symbol = "[❯](fg:peach)"
+error_symbol   = "[❯](fg:red)"
+vimcmd_symbol  = "[❮](fg:subtext1)"
 
 [cmd_duration]
 min_time = 1                 # show for any command ≥1 ms
