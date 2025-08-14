@@ -3,7 +3,7 @@
 ###############################################################################
 # Pick your flavour
 ###############################################################################
-palette = "catppuccin_mocha"   # latte | frappe | macchiato | mocha
+palette = "catppuccin_mocha"   # latte | frappe | macchiato | mocha | dracula
 
 ###############################################################################
 # Prompt layout – left power-line, right command-duration
@@ -207,3 +207,19 @@ surface0  = "#313244"
 base      = "#1e1e2e"
 mantle    = "#181825"
 crust     = "#11111b"
+
+###############################################################################
+# Full Dracula palette
+###############################################################################
+[palettes.dracula]
+background = "#282a36"
+current_line = "#44475a"
+foreground = "#f8f8f2"
+comment = "#6272a4"
+cyan = "#8be9fd"
+green = "#50fa7b"
+orange = "#ffb86c"
+pink = "#ff79c6"
+purple = "#bd93f9"
+red = "#ff5555"
+yellow = "#f1fa8c"
