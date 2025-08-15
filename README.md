@@ -4,7 +4,7 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 
 ## 📦 Contents
 
-- `starship/` — [Starship](https://starship.rs) prompt configuration using the Catppuccin Macchiato theme, with powerline-style segments and Nerd Font support.
+- `starship/` — [Starship](https://starship.rs) prompt configuration using the Catppuccin Mocha theme, with powerline-style segments and Nerd Font support.
 - `ghostty/` — Terminal themes and profiles for [Ghostty](https://ghostty.app), symlinked to `~/.config/ghostty`.
 - `warp/` — Custom themes for [Warp](https://warp.dev), backed up for manual import.
 - (more coming soon...)
