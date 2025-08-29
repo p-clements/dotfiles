@@ -87,9 +87,10 @@ fi
 # ── eza (modern ls) aliases ──────────────────────────────────
 # Handy defaults that play nicely with your fzf-tab previews.
 if command -v eza >/dev/null 2>&1; then
-  alias ls='eza'
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lta='lt -a'
+  alias lt='eza --tree --level=2 --long --icons --git'
   alias ll='eza -al --group-directories-first --git'
-  alias lt='eza -aT --level=2'
 fi
 
 # ── zoxide (smart cd) ────────────────────────────────────────
