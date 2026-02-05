@@ -1,108 +1,131 @@
-# ── General PATH setup ────────────────────────────────────────
-# Keep pyenv shims and your git-tools early on PATH.
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$HOME/git-tools:$PATH"
+#########################################################
+#  ~/.zshrc — WSL-Ubuntu, Starship prompt                #
+#########################################################
 
-# ── Homebrew (Apple Silicon) ergonomics ──────────────────────
-# Ensure brew-managed CLIs are found early.
-[[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:$PATH"
+#### 1. basic shell hygiene ################################
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt APPEND_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS
 
-# ── Pyenv (Python version manager) ────────────────────────────
-# Initialise pyenv so shims work for python/pip, etc.
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+export EDITOR='nvim'
+
+#### 2. Homebrew (Linuxbrew) ################################
+# Put this early so brew-installed tools are on PATH for everything below.
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-# ── Upgrade every outdated package in the current pyenv env ───
+#### 3. PATHs ################################################
+# Keep PATH edits together and early.
+# Note: append here so pyenv can still take precedence via shims.
+export PATH="$PATH:/opt/mssql-tools18/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+#### 4. pyenv ################################################
+# Ensure pyenv works in zsh (and python is found via shims).
+export PYENV_ROOT="$HOME/.pyenv"
+if [[ -x "$PYENV_ROOT/bin/pyenv" ]]; then
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init - zsh)"
+  # Only if you actually use pyenv-virtualenv:
+  eval "$(pyenv virtualenv-init - zsh)"
+fi
+
+# Upgrade every outdated pip package in the current environment.
 pip-upgrade-all() {
-  python -m pip list --outdated --format=json \
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "jq is required (brew install jq or sudo apt install jq)"
+    return 1
+  fi
+
+  local py
+  py="$(command -v python || command -v python3)" || {
+    echo "Python not found (pyenv not initialised or no python installed)."
+    return 1
+  }
+
+  "$py" -m pip list --outdated --format=json \
     | jq -r '.[].name' \
-    | xargs -n1 python -m pip install --upgrade
+    | xargs -n1 "$py" -m pip install --upgrade
 }
 
-# ── Prompt (Starship) ────────────────────────────────────────
-# Fast, pretty prompt.
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
+#### 5. completions #########################################
+if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
+  fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
 fi
 
-# ── Docker CLI completions ───────────────────────────────────
-# Add Docker completion functions to fpath.
-fpath=("$HOME/.docker/completions" $fpath)
-
-# ── Palette: Catppuccin Macchiato ────────────────────────────
-# Reference: https://catppuccin.com/palette/macchiato
-export FZF_DEFAULT_OPTS="\
---color=fg:#cad3f5,bg:#24273a,hl:#c6a0f6 \
---color=fg+:#cad3f5,bg+:#494d64,hl+:#c6a0f6 \
---color=header:#8087a2,info:#91d7e3,pointer:#a6da95 \
---color=marker:#f5a97f,spinner:#8bd5ca,prompt:#7dc4e4"
-
-# ── fzf key-bindings & completion widgets ────────────────────
-# Adds Ctrl-R / Ctrl-T / Alt-C shortcuts and completion helpers.
-if command -v fzf >/dev/null 2>&1; then
-  source <(fzf --zsh)
+# WSL: Docker Desktop can leave a broken symlink when its mount isn't present.
+if [[ -L /usr/share/zsh/vendor-completions/_docker && ! -e /usr/share/zsh/vendor-completions/_docker ]]; then
+  fpath=(${fpath:#/usr/share/zsh/vendor-completions})
 fi
 
-# ── Autosuggestions (history “ghost text”) ───────────────────
-# Subtle suggestions; keep before syntax highlighting.
-if [ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#8087a2'
+fpath+=~/.zsh/completions
+autoload -Uz compinit && compinit
+
+#### 6. fzf ##################################
+[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
+
+#### 7. plugins (stand-alone) ###############################
+if [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
-# ── fzf-tab: fuzzy <Tab> completion with preview ─────────────
-# Works with your fzf theme; shows directory previews via eza.
-if [ -r "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh" ]; then
-  source "$HOME/.local/share/fzf-tab/fzf-tab.plugin.zsh"
-  zstyle ':fzf-tab:*' use-fzf-default-opts yes
-  zstyle ':fzf-tab:*' switch-group '<' '>'
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always ${(q)realpath}'
+if [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-# ── Syntax highlighting (MUST load last) ─────────────────────
-if [ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-  typeset -gA ZSH_HIGHLIGHT_STYLES
-  ZSH_HIGHLIGHT_STYLES[command]='fg=#8aadf4'
-  ZSH_HIGHLIGHT_STYLES[builtin]='fg=#a6da95'
-  ZSH_HIGHLIGHT_STYLES[alias]='fg=#f5bde6'
-  ZSH_HIGHLIGHT_STYLES[path]='fg=#eed49f'
-  ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#ed8796,bold'
-fi
+#### 8. aliases & local tooling #############################
+alias gs='git status -sb'
 
-# ── Completions: initialise once & cache ─────────────────────
-# Use -C to skip re-building if cache exists; speeds up startup.
-autoload -Uz compinit
-compinit -C
+# Pull all git repos under a root (default: ~/repos), excluding any repo named dotfiles.
+gpullall() {
+  local root="${1:-$HOME/repos}"
+  if [[ ! -d "$root" ]]; then
+    echo "Directory not found: $root"
+    return 1
+  fi
 
-# ── Homebrew site-functions (eza + others) ───────────────────
-# Adds brew-provided completions (incl. eza) to fpath.
-if command -v brew >/dev/null 2>&1; then
-  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-  # After changing fpath, rebuild cache once.
-  compinit -C
-fi
+  find "$root" -type d -name .git -prune | while IFS= read -r gitdir; do
+    local repo="${gitdir%/.git}"
+    [[ "$(basename "$repo")" == "dotfiles" ]] && continue
+    echo "== ${repo#$root/} =="
+    (cd "$repo" && git pull --ff-only)
+  done
+}
 
-# ── eza (modern ls) aliases ──────────────────────────────────
-# Handy defaults that play nicely with your fzf-tab previews.
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza -lh --group-directories-first --icons=auto'
-  alias lta='lt -a'
   alias lt='eza --tree --level=2 --long --icons --git'
+  alias lta='lt -a'
   alias ll='eza -al --group-directories-first --git'
 fi
 
-# ── zoxide (smart cd) ────────────────────────────────────────
-# Jump to dirs with `z`; interactive picker with `zi`.
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
+if [[ -x "$HOME/.local/bin/dbt" ]]; then
+  alias dbtf="$HOME/.local/bin/dbt"
 fi
 
-# ── History: better defaults ─────────────────────────────────
-# Bigger history, dedup, share across sessions for better fzf/Ctrl-R.
-HISTFILE=~/.zsh_history
-HISTSIZE=200000
-SAVEHIST=200000
-setopt HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS \
-       INC_APPEND_HISTORY SHARE_HISTORY EXTENDED_HISTORY
+#### 9. dbt Fusion extension ###############################
+# Ensure dbt binary dir is on PATH (added by dbt Fusion extension).
+if [[ ":$PATH:" != *":/home/pclements/.local/bin:"* ]]; then
+  export PATH=/home/pclements/.local/bin:"$PATH"
+fi
+
+#### 10. OpenAI config #####################################
+# Keep secrets in ~/.zshrc.local so this file is safe to commit.
+export OPENAI_BASE_URL="https://litellm-user.prd.mercuria.systems"
+
+# Optional local overrides (not checked in).
+if [[ -f "$HOME/.zshrc.local" ]]; then
+  source "$HOME/.zshrc.local"
+fi
+
+#### 11. prompt — starship ###################################
+# Keep prompt init last so it reflects final PATH/env.
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
