@@ -1,4 +1,5 @@
 "$schema" = "https://starship.rs/config-schema.json"
+scan_timeout = 2000
 
 ###############################################################################
 # Pick your flavour
@@ -68,7 +69,7 @@ format = "[[ $symbol $version ](fg:crust bg:green)]($style)"
 [python]
 symbol = ""
 style  = "bg:green"
-format = "[[ $symbol $version ](fg:crust bg:green)]($style)"
+format = "[[ $symbol $version $virtualenv ](fg:crust bg:green)]($style)"
 python_binary = "python"
 
 [docker_context]
