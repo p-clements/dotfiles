@@ -69,7 +69,7 @@ format = "[[ $symbol $version ](fg:crust bg:green)]($style)"
 [python]
 symbol = ""
 style  = "bg:green"
-format = "[[ $symbol $version ](fg:crust bg:green)]($style)"
+format = "[[ $symbol $version $virtualenv ](fg:crust bg:green)]($style)"
 python_binary = "python"
 
 [docker_context]

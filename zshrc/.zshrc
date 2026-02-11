@@ -30,6 +30,8 @@ export PATH="$HOME/.local/bin:$PATH"
 # Ensure pyenv works in zsh (and python is found via shims).
 export PYENV_ROOT="$HOME/.pyenv"
 if [[ -x "$PYENV_ROOT/bin/pyenv" ]]; then
+  # Let Starship handle venv display instead of pyenv-virtualenv.
+  export PYENV_VIRTUALENV_DISABLE_PROMPT=1
   export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init - zsh)"
   # Only if you actually use pyenv-virtualenv:
