@@ -86,18 +86,13 @@ alias gs='git status -sb'
 
 # Pull all git repos under a root (default: ~/repos), excluding any repo named dotfiles.
 gpullall() {
-  local root="${1:-$HOME/repos}"
-  if [[ ! -d "$root" ]]; then
-    echo "Directory not found: $root"
+  local script="$HOME/.zsh/scripts/gpullall"
+  if [[ ! -x "$script" ]]; then
+    echo "Missing executable: $script"
     return 1
   fi
 
-  find "$root" -type d -name .git -prune | while IFS= read -r gitdir; do
-    local repo="${gitdir%/.git}"
-    [[ "$(basename "$repo")" == "dotfiles" ]] && continue
-    echo "== ${repo#$root/} =="
-    (cd "$repo" && git pull --ff-only)
-  done
+  "$script" "$@"
 }
 
 if command -v eza >/dev/null 2>&1; then
@@ -119,7 +114,8 @@ fi
 
 #### 10. OpenAI config #####################################
 # Keep secrets in ~/.zshrc.local so this file is safe to commit.
-export OPENAI_BASE_URL="https://litellm-user.prd.mercuria.systems"
+export OPENAI_BASE_URL="https://litellm-user.prd.mercuria.systems" #Prod
+#export OPENAI_BASE_URL="https://litellm-user.dev.mercuria.systems" #Dev
 
 # Optional local overrides (not checked in).
 if [[ -f "$HOME/.zshrc.local" ]]; then
@@ -131,3 +127,6 @@ fi
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
+
+# Cortex CLI completion (disable via /settings in cortex)
+[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
