@@ -114,8 +114,7 @@ fi
 
 #### 10. OpenAI config #####################################
 # Keep secrets in ~/.zshrc.local so this file is safe to commit.
-export OPENAI_BASE_URL="https://litellm-user.prd.mercuria.systems" #Prod
-#export OPENAI_BASE_URL="https://litellm-user.dev.mercuria.systems" #Dev
+
 
 # Optional local overrides (not checked in).
 if [[ -f "$HOME/.zshrc.local" ]]; then
