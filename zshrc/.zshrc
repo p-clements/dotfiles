@@ -1,8 +1,8 @@
 #########################################################
-#  ~/.zshrc — WSL-Ubuntu, Starship prompt                #
+#  ~/.zshrc — cross-platform (macOS + WSL/Ubuntu)        #
 #########################################################
 
-#### 1. basic shell hygiene ################################
+#### 1. shell hygiene #######################################
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
@@ -14,47 +14,29 @@ setopt HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS
 
 export EDITOR='nvim'
 
-#### 2. Homebrew (Linuxbrew) ################################
+#### 2. Homebrew ############################################
 # Put this early so brew-installed tools are on PATH for everything below.
+# Linuxbrew path for WSL; macOS sets HOMEBREW_PREFIX via /opt/homebrew.
 if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-#### 3. PATHs ################################################
+#### 3. PATH ################################################
 # Keep PATH edits together and early.
-# Note: append here so pyenv can still take precedence via shims.
 export PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
-#### 4. pyenv ################################################
+#### 4. pyenv ###############################################
 # Ensure pyenv works in zsh (and python is found via shims).
 export PYENV_ROOT="$HOME/.pyenv"
 if [[ -x "$PYENV_ROOT/bin/pyenv" ]]; then
-  # Let Starship handle venv display instead of pyenv-virtualenv.
-  export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+  export PYENV_VIRTUALENV_DISABLE_PROMPT=1  # let Starship handle venv display
   export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init - zsh)"
-  # Only if you actually use pyenv-virtualenv:
   eval "$(pyenv virtualenv-init - zsh)"
 fi
-
-# Upgrade every outdated pip package in the current environment.
-pip-upgrade-all() {
-  if ! command -v jq >/dev/null 2>&1; then
-    echo "jq is required (brew install jq or sudo apt install jq)"
-    return 1
-  fi
-
-  local py
-  py="$(command -v python || command -v python3)" || {
-    echo "Python not found (pyenv not initialised or no python installed)."
-    return 1
-  }
-
-  "$py" -m pip list --outdated --format=json \
-    | jq -r '.[].name' \
-    | xargs -n1 "$py" -m pip install --upgrade
-}
 
 #### 5. completions #########################################
 if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
@@ -69,31 +51,29 @@ fi
 fpath+=~/.zsh/completions
 autoload -Uz compinit && compinit
 
-#### 6. fzf ##################################
+# Cortex CLI completion (disable via /settings in cortex)
+[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
+
+#### 6. fzf #################################################
 [[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
 
-#### 7. plugins (stand-alone) ###############################
-if [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+#### 7. plugins #############################################
+# zsh-autosuggestions
+if [[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+elif [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
-if [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+# zsh-syntax-highlighting (must load last among plugins)
+if [[ -r "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
   source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-#### 8. aliases & local tooling #############################
+#### 8. aliases & functions #################################
 alias gs='git status -sb'
-
-# Pull all git repos under a root (default: ~/repos), excluding any repo named dotfiles.
-gpullall() {
-  local script="$HOME/.zsh/scripts/gpullall"
-  if [[ ! -x "$script" ]]; then
-    echo "Missing executable: $script"
-    return 1
-  fi
-
-  "$script" "$@"
-}
 
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza -lh --group-directories-first --icons=auto'
@@ -102,30 +82,36 @@ if command -v eza >/dev/null 2>&1; then
   alias ll='eza -al --group-directories-first --git'
 fi
 
-if [[ -x "$HOME/.local/bin/dbt" ]]; then
-  alias dbtf="$HOME/.local/bin/dbt"
-fi
+# Pull all git repos under a root dir, excluding dotfiles.
+# Pass a path or set REPOS_ROOT; defaults to common locations.
+gpullall() {
+  local script="$HOME/.zsh/scripts/gpullall"
+  if [[ ! -x "$script" ]]; then
+    echo "Missing executable: $script"
+    return 1
+  fi
+  "$script" "$@"
+}
 
-#### 9. dbt Fusion extension ###############################
-# Ensure dbt binary dir is on PATH (added by dbt Fusion extension).
-if [[ ":$PATH:" != *":/home/pclements/.local/bin:"* ]]; then
-  export PATH=/home/pclements/.local/bin:"$PATH"
-fi
+# Upgrade every outdated pip package in the current environment.
+pip-upgrade-all() {
+  local script="$HOME/.zsh/scripts/pip-upgrade-all"
+  if [[ ! -x "$script" ]]; then
+    echo "Missing executable: $script"
+    return 1
+  fi
+  "$script" "$@"
+}
 
-#### 10. OpenAI config #####################################
-# Keep secrets in ~/.zshrc.local so this file is safe to commit.
-
-
-# Optional local overrides (not checked in).
+#### 9. local overrides #####################################
+# Machine-specific config (not committed): LiteLLM endpoints,
+# API keys, work proxies, etc. Lives in ~/.zshrc.local.
 if [[ -f "$HOME/.zshrc.local" ]]; then
   source "$HOME/.zshrc.local"
 fi
 
-#### 11. prompt — starship ###################################
-# Keep prompt init last so it reflects final PATH/env.
+#### 10. prompt #############################################
+# Starship must be last so it reflects the final PATH and env.
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
-
-# Cortex CLI completion (disable via /settings in cortex)
-[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
