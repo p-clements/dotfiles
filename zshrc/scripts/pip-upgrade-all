@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# pip-upgrade-all — upgrade every outdated pip package in the current environment
+#
+# Usage:
+#   pip-upgrade-all
+#
+# Notes:
+#   - Operates on whichever python/pip is active (pyenv, venv, system)
+#   - Requires jq to parse pip's JSON output (brew install jq / apt install jq)
+#   - Run inside a virtual environment to avoid upgrading system packages
 
 set -u
 
