@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -u
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required (brew install jq or sudo apt install jq)"
+  exit 1
+fi
+
+py="$(command -v python || command -v python3)" || {
+  echo "Python not found (pyenv not initialised or no python installed)."
+  exit 1
+}
+
+"$py" -m pip list --outdated --format=json \
+  | jq -r '.[].name' \
+  | xargs -n1 "$py" -m pip install --upgrade

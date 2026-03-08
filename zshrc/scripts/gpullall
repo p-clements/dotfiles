@@ -26,7 +26,7 @@ switch_to_default_branch() {
 }
 
 gpullall_main() {
-  local root="${1:-$HOME/repos}"
+  local root="${1:-${REPOS_ROOT:-$HOME/repos}}"
   if [[ ! -d "$root" ]]; then
     echo "Directory not found: $root"
     return 1
