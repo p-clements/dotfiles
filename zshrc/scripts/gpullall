@@ -1,4 +1,25 @@
 #!/usr/bin/env bash
+# gpullall — pull all git repos under a root directory
+#
+# Usage:
+#   gpullall [ROOT]
+#
+# Arguments:
+#   ROOT   Path to scan for git repos (default: $REPOS_ROOT, then ~/repos)
+#
+# For each repo found (excluding any named "dotfiles"):
+#   - Fetches all remotes and prunes stale refs
+#   - Fast-forward pulls if the branch has a valid upstream
+#   - If the upstream branch is gone (e.g. merged PR), prompts interactively:
+#       [d]elete  — delete the local branch and switch to default
+#       [s]witch  — switch to the default branch without deleting
+#       [i]gnore  — leave the branch as-is
+#
+# Notes:
+#   - Expects a flat repos layout (repos directly under ROOT, not nested)
+#   - Skips repos in detached HEAD state
+#   - Safe to run in non-interactive shells (skips prompt, leaves branch unchanged)
+#   - Set REPOS_ROOT in ~/.zshrc.local to avoid passing ROOT every time
 
 set -u
 
