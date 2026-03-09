@@ -5,7 +5,7 @@
 #   pip-upgrade-all
 #
 # Notes:
-#   - Operates on whichever python/pip is active (pyenv, venv, system)
+#   - Operates on whichever python/pip is active (venv, uv-managed, or system)
 #   - Requires jq to parse pip's JSON output (brew install jq / apt install jq)
 #   - Run inside a virtual environment to avoid upgrading system packages
 
@@ -17,7 +17,7 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 py="$(command -v python || command -v python3)" || {
-  echo "Python not found (pyenv not initialised or no python installed)."
+  echo "Python not found (ensure python is installed and on PATH)."
   exit 1
 }
 

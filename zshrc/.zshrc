@@ -27,11 +27,6 @@ fi
 # Keep PATH edits together and early.
 export PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$HOME/.local/bin:$PATH"
-# Remove pyenv path entries inherited from host/user shell configs.
-path=(${path:#*/.pyenv/bin})
-path=(${path:#*/.pyenv/shims})
-path=(${path:#*/.pyenv/pyenv-win/bin})
-path=(${path:#*/.pyenv/pyenv-win/shims})
 
 #### 4. completions #########################################
 if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
