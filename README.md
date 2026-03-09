@@ -6,7 +6,7 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 
 | Path | Description |
 |------|-------------|
-| `zshrc/.zshrc` | Cross-platform Zsh config — Homebrew, pyenv, plugins, aliases, and functions |
+| `zshrc/.zshrc` | Cross-platform Zsh config — Homebrew, plugins, aliases, and functions |
 | `zshrc/scripts/gpullall` | Pulls all git repos under a root directory, with interactive branch cleanup |
 | `zshrc/scripts/pip-upgrade-all` | Upgrades all outdated pip packages in the current Python environment |
 | `starship/starship.toml` | [Starship](https://starship.rs) prompt config using the Catppuccin Macchiato theme |
