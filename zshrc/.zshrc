@@ -28,13 +28,7 @@ fi
 export PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
-#### 4. uv #################################################
-# Shell completions for uv.
-if command -v uv >/dev/null 2>&1; then
-  eval "$(uv generate-shell-completion zsh)"
-fi
-
-#### 5. completions #########################################
+#### 4. completions #########################################
 if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
   fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
 fi
@@ -46,6 +40,11 @@ fi
 
 fpath+=~/.zsh/completions
 autoload -Uz compinit && compinit
+
+# uv shell completions (must come after compinit)
+if command -v uv >/dev/null 2>&1; then
+  eval "$(uv generate-shell-completion zsh)"
+fi
 
 # Cortex CLI completion (disable via /settings in cortex)
 [[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
