@@ -18,25 +18,25 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 Clone the repo:
 
 ```bash
-git clone git@github.com:p-clements/dotfiles.git ~/code/repos/dotfiles
+git clone git@github.com:p-clements/dotfiles.git ~/code/projects/dotfiles
 ```
 
 Symlink configs:
 
 ```bash
 # Zsh
-ln -sfn ~/code/repos/dotfiles/zshrc/.zshrc ~/.zshrc
+ln -sfn ~/code/projects/dotfiles/zshrc/.zshrc ~/.zshrc
 
 # Zsh scripts
 mkdir -p ~/.zsh/scripts
-ln -sf ~/code/repos/dotfiles/zshrc/scripts/gpullall ~/.zsh/scripts/gpullall
-ln -sf ~/code/repos/dotfiles/zshrc/scripts/pip-upgrade-all ~/.zsh/scripts/pip-upgrade-all
+ln -sf ~/code/projects/dotfiles/zshrc/scripts/gpullall ~/.zsh/scripts/gpullall
+ln -sf ~/code/projects/dotfiles/zshrc/scripts/pip-upgrade-all ~/.zsh/scripts/pip-upgrade-all
 
 # Starship
-ln -sfn ~/code/repos/dotfiles/starship/starship.toml ~/.config/starship.toml
+ln -sfn ~/code/projects/dotfiles/starship/starship.toml ~/.config/starship.toml
 
 # Ghostty
-ln -sfn ~/code/repos/dotfiles/ghostty ~/.config/ghostty
+ln -sfn ~/code/projects/dotfiles/ghostty ~/.config/ghostty
 ```
 
 Warp themes can be manually imported from `warp/` if needed.
@@ -51,7 +51,7 @@ Sourced at the end of `.zshrc`. Use this for anything machine-specific or secret
 
 ```bash
 # Repos root for gpullall
-export REPOS_ROOT="$HOME/code/repos"
+export REPOS_ROOT="$HOME/code/projects"
 
 # LiteLLM / Codex endpoints (work machine)
 export LITELLM_API_BASE="https://..."

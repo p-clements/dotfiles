@@ -49,6 +49,12 @@ fi
 # Cortex CLI completion (disable via /settings in cortex)
 [[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
 
+#### 5. zoxide #############################################
+# Must come after compinit for completions to work.
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh --cmd cd)"
+fi
+
 #### 6. fzf #################################################
 [[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
 
@@ -69,12 +75,19 @@ fi
 
 #### 8. aliases & functions #################################
 alias gs='git status -sb'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lsa='ls -a'
   alias lt='eza --tree --level=2 --long --icons --git'
   alias lta='lt -a'
-  alias ll='eza -al --group-directories-first --git'
+fi
+
+if command -v fzf >/dev/null 2>&1 && command -v bat >/dev/null 2>&1; then
+  alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
 fi
 
 # Pull all git repos under a root dir, excluding dotfiles.
