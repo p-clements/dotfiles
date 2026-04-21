@@ -50,9 +50,6 @@ These files must be created manually on each machine — they contain machine-sp
 Sourced at the end of `.zshrc`. Use this for anything machine-specific or secret:
 
 ```bash
-# Repos root for gpullall
-export REPOS_ROOT="$HOME/code/projects"
-
 # LiteLLM / Codex endpoints (work machine)
 export LITELLM_API_BASE="https://..."
 export OPENAI_API_KEY="sk-..."
@@ -69,5 +66,5 @@ export GIT_COMMITTER_EMAIL="you@example.com"
 ## Notes
 
 - Starship uses the `catppuccin_macchiato` palette by default. Change the palette in `starship.toml` to switch flavour.
-- `gpullall` reads `REPOS_ROOT` env var if set, otherwise defaults to `~/repos`. Set it in `~/.zshrc.local` to match your machine's layout.
+
 - Plugins (zsh-autosuggestions, zsh-syntax-highlighting) are loaded from Homebrew on macOS or `/usr/share` on Linux — install with `brew install zsh-autosuggestions zsh-syntax-highlighting` or `apt install` equivalents.
