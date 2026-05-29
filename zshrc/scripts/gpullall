@@ -16,26 +16,65 @@
 #       [i]gnore  — leave the branch as-is
 #
 # Notes:
-#   - Expects a flat repos layout (repos directly under ROOT, not nested)
+#   - Recursively scans for git repos under ROOT
 #   - Skips repos in detached HEAD state
 #   - Safe to run in non-interactive shells (skips prompt, leaves branch unchanged)
 
-
 set -u
 
-switch_to_default_branch() {
-  local default_branch="$1"
+branch_upstream() {
+  local branch="$1"
+  local remote merge
 
-  if git show-ref --verify --quiet "refs/remotes/origin/$default_branch"; then
-    git checkout -q -B "$default_branch" "origin/$default_branch" || {
+  remote="$(git config --get "branch.$branch.remote" 2>/dev/null || true)"
+  merge="$(git config --get "branch.$branch.merge" 2>/dev/null || true)"
+
+  if [[ -z "$remote" || -z "$merge" ]]; then
+    return 1
+  fi
+
+  printf '%s/%s\n' "$remote" "${merge#refs/heads/}"
+}
+
+default_branch_for_remote() {
+  local remote="$1"
+  local default_ref default_branch
+
+  default_ref="$(git symbolic-ref --short -q "refs/remotes/$remote/HEAD" 2>/dev/null || true)"
+  default_branch="${default_ref#"$remote"/}"
+
+  if [[ -n "$default_branch" ]]; then
+    printf '%s\n' "$default_branch"
+    return 0
+  fi
+
+  if git show-ref --verify --quiet "refs/remotes/$remote/main" || git show-ref --verify --quiet refs/heads/main; then
+    printf 'main\n'
+    return 0
+  fi
+
+  if git show-ref --verify --quiet "refs/remotes/$remote/master" || git show-ref --verify --quiet refs/heads/master; then
+    printf 'master\n'
+    return 0
+  fi
+
+  return 1
+}
+
+switch_to_default_branch() {
+  local remote="$1"
+  local default_branch="$2"
+
+  if git show-ref --verify --quiet "refs/heads/$default_branch"; then
+    git switch -q "$default_branch" || {
       echo "Could not switch to $default_branch."
       return 1
     }
     return 0
   fi
 
-  if git show-ref --verify --quiet "refs/heads/$default_branch"; then
-    git checkout -q "$default_branch" || {
+  if git show-ref --verify --quiet "refs/remotes/$remote/$default_branch"; then
+    git switch -q -c "$default_branch" --track "$remote/$default_branch" || {
       echo "Could not switch to $default_branch."
       return 1
     }
@@ -46,14 +85,62 @@ switch_to_default_branch() {
   return 1
 }
 
+fast_forward_upstream() {
+  local branch="$1"
+  local upstream="$2"
+  local counts ahead behind
+
+  counts="$(git rev-list --left-right --count "HEAD...$upstream")" || {
+    echo "Could not compare $branch with $upstream."
+    return 1
+  }
+
+  ahead="${counts%%[[:space:]]*}"
+  behind="${counts##*[[:space:]]}"
+
+  if [[ "$ahead" == "0" && "$behind" == "0" ]]; then
+    echo "Already up to date."
+    return 0
+  fi
+
+  if [[ "$ahead" != "0" && "$behind" == "0" ]]; then
+    echo "Local branch $branch is ahead of $upstream, nothing to pull."
+    return 0
+  fi
+
+  if [[ "$ahead" != "0" && "$behind" != "0" ]]; then
+    echo "Local branch $branch has diverged from $upstream, skipping fast-forward."
+    return 0
+  fi
+
+  if ! git diff --quiet --ignore-submodules -- || ! git diff --cached --quiet --ignore-submodules --; then
+    echo "Working tree has tracked local changes, skipping fast-forward."
+    return 0
+  fi
+
+  if git merge --ff-only --quiet "$upstream"; then
+    echo "Fast-forwarded $branch to $upstream."
+    return 0
+  fi
+
+  echo "Fast-forward failed for $branch."
+  return 1
+}
+
 gpullall_main() {
   local root="${1:-$PWD}"
+  local interactive="0"
+
   if [[ ! -d "$root" ]]; then
     echo "Directory not found: $root"
     return 1
   fi
 
-  while IFS= read -r gitdir; do
+  if [[ -t 0 ]]; then
+    interactive="1"
+  fi
+
+  while IFS= read -r -u 3 gitdir; do
     local repo="${gitdir%/.git}"
     [[ "$(basename "$repo")" == "dotfiles" ]] && continue
     echo "== ${repo#$root/} =="
@@ -66,15 +153,14 @@ gpullall_main() {
         exit 0
       fi
 
-      local branch upstream remote_ref default_ref default_branch choice
+      local branch upstream remote_ref remote default_branch choice
       branch="$(git symbolic-ref --short -q HEAD)"
       if [[ -z "$branch" ]]; then
         echo "Detached HEAD, skipping pull."
         exit 0
       fi
 
-      upstream="$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || true)"
-      if [[ -z "$upstream" ]]; then
+      if ! upstream="$(branch_upstream "$branch")"; then
         echo "No upstream configured for $branch, skipping pull."
         exit 0
       fi
@@ -83,24 +169,16 @@ gpullall_main() {
       if ! git show-ref --verify --quiet "$remote_ref"; then
         echo "Upstream $upstream is gone (likely merged or deleted)."
 
-        if [[ ! -t 0 ]]; then
+        if [[ "$interactive" != "1" ]]; then
           echo "Non-interactive shell, leaving local branch $branch unchanged."
           exit 0
         fi
 
-        default_ref="$(git symbolic-ref --short -q refs/remotes/origin/HEAD 2>/dev/null || true)"
-        default_branch="${default_ref#origin/}"
-
-        if [[ -z "$default_branch" ]]; then
-          if git show-ref --verify --quiet refs/remotes/origin/main || git show-ref --verify --quiet refs/heads/main; then
-            default_branch="main"
-          elif git show-ref --verify --quiet refs/remotes/origin/master || git show-ref --verify --quiet refs/heads/master; then
-            default_branch="master"
-          fi
-        fi
+        remote="${upstream%%/*}"
+        default_branch="$(default_branch_for_remote "$remote" || true)"
 
         while true; do
-          printf "Choose for %s in %s: [d]elete local, [s]witch to default, [i]gnore: " "$branch" "${repo#$root/}"
+          printf "Choose for %s in %s: [d]elete local, [s]witch to default, [i]gnore: " "$branch" "${repo#$root/}" >&2
           IFS= read -r choice || choice="i"
 
           case "${choice,,}" in
@@ -110,13 +188,13 @@ gpullall_main() {
                 continue
               fi
 
-              if ! switch_to_default_branch "$default_branch"; then
+              if ! switch_to_default_branch "$remote" "$default_branch"; then
                 continue
               fi
 
               if git branch -D "$branch"; then
                 echo "Deleted local branch $branch."
-                git pull --ff-only
+                fast_forward_upstream "$default_branch" "$remote/$default_branch"
               fi
               break
               ;;
@@ -126,11 +204,11 @@ gpullall_main() {
                 continue
               fi
 
-              if ! switch_to_default_branch "$default_branch"; then
+              if ! switch_to_default_branch "$remote" "$default_branch"; then
                 continue
               fi
 
-              git pull --ff-only
+              fast_forward_upstream "$default_branch" "$remote/$default_branch"
               break
               ;;
             i|ignore|"")
@@ -146,9 +224,9 @@ gpullall_main() {
         exit 0
       fi
 
-      git pull --ff-only
+      fast_forward_upstream "$branch" "$upstream"
     )
-  done < <(find "$root" -type d -name .git -prune)
+  done 3< <(find "$root" -type d -name .git -prune)
 }
 
 gpullall_main "$@"
