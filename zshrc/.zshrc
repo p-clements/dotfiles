@@ -38,8 +38,9 @@ if [[ -L /usr/share/zsh/vendor-completions/_docker && ! -e /usr/share/zsh/vendor
   fpath=(${fpath:#/usr/share/zsh/vendor-completions})
 fi
 
-fpath+=~/.zsh/completions
+fpath+=(~/.zsh/completions ~/.zfunc)
 autoload -Uz compinit && compinit
+zstyle ':completion:*' menu select
 
 # uv shell completions (must come after compinit)
 if command -v uv >/dev/null 2>&1; then
@@ -123,7 +124,3 @@ fi
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
-
-fpath+=~/.zfunc; autoload -Uz compinit; compinit
-
-zstyle ':completion:*' menu select

@@ -181,7 +181,8 @@ gpullall_main() {
           printf "Choose for %s in %s: [d]elete local, [s]witch to default, [i]gnore: " "$branch" "${repo#$root/}" >&2
           IFS= read -r choice || choice="i"
 
-          case "${choice,,}" in
+          choice="$(printf '%s' "$choice" | tr '[:upper:]' '[:lower:]')"
+          case "$choice" in
             d|delete)
               if [[ -z "$default_branch" ]]; then
                 echo "Could not determine default branch. Choose ignore or switch manually."
