@@ -8,38 +8,33 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 |------|-------------|
 | `zshrc/.zshrc` | Cross-platform Zsh config — Homebrew, plugins, aliases, and functions |
 | `zshrc/scripts/gpullall` | Pulls all git repos under a root directory, with interactive branch cleanup |
-| `zshrc/scripts/pip-upgrade-all` | Upgrades all outdated pip packages in the current Python environment |
 | `starship/starship.toml` | [Starship](https://starship.rs) prompt config using the Catppuccin Macchiato theme |
 | `ghostty/` | [Ghostty](https://ghostty.app) terminal themes and profiles |
-| `warp/` | [Warp](https://warp.dev) custom themes (manual import) |
 
 ## Setup
 
 Clone the repo:
 
 ```bash
-git clone git@github.com:p-clements/dotfiles.git ~/code/projects/dotfiles
+git clone git@github.com:p-clements/dotfiles.git ~/repos/dotfiles
 ```
 
 Symlink configs:
 
 ```bash
 # Zsh
-ln -sfn ~/code/projects/dotfiles/zshrc/.zshrc ~/.zshrc
+ln -sfn ~/repos/dotfiles/zshrc/.zshrc ~/.zshrc
 
 # Zsh scripts
 mkdir -p ~/.zsh/scripts
-ln -sf ~/code/projects/dotfiles/zshrc/scripts/gpullall ~/.zsh/scripts/gpullall
-ln -sf ~/code/projects/dotfiles/zshrc/scripts/pip-upgrade-all ~/.zsh/scripts/pip-upgrade-all
+ln -sf ~/repos/dotfiles/zshrc/scripts/gpullall ~/.zsh/scripts/gpullall
 
 # Starship
-ln -sfn ~/code/projects/dotfiles/starship/starship.toml ~/.config/starship.toml
+ln -sfn ~/repos/dotfiles/starship/starship.toml ~/.config/starship.toml
 
 # Ghostty
-ln -sfn ~/code/projects/dotfiles/ghostty ~/.config/ghostty
+ln -sfn ~/repos/dotfiles/ghostty ~/.config/ghostty
 ```
-
-Warp themes can be manually imported from `warp/` if needed.
 
 ## Additional files (not committed)
 
