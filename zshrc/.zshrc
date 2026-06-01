@@ -25,10 +25,15 @@ fi
 
 #### 3. PATH ################################################
 # Keep PATH edits together and early.
-export PATH="$PATH:/opt/mssql-tools18/bin"
-export PATH="$HOME/.local/bin:$PATH"
+path=("$HOME/.local/bin" $path)
+[[ -d /opt/mssql-tools18/bin ]] && path+=("/opt/mssql-tools18/bin")
+typeset -U path
+export PATH
 
 #### 4. completions #########################################
+ZSH_CACHE_DIR="$HOME/.cache/zsh"
+mkdir -p "$ZSH_CACHE_DIR"
+
 if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]]; then
   fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
 fi
@@ -39,7 +44,7 @@ if [[ -L /usr/share/zsh/vendor-completions/_docker && ! -e /usr/share/zsh/vendor
 fi
 
 fpath+=(~/.zsh/completions ~/.zfunc)
-autoload -Uz compinit && compinit
+autoload -Uz compinit && compinit -d "$ZSH_CACHE_DIR/zcompdump"
 zstyle ':completion:*' menu select
 
 # uv shell completions (must come after compinit)
@@ -57,7 +62,7 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 #### 6. fzf #################################################
-[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
+[[ -t 0 && -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
 
 #### 7. plugins #############################################
 # zsh-autosuggestions
@@ -92,19 +97,9 @@ if command -v fzf >/dev/null 2>&1 && command -v bat >/dev/null 2>&1; then
 fi
 
 # Pull all git repos under a root dir, excluding dotfiles.
-# Pass a path or set REPOS_ROOT; defaults to common locations.
+# Pass a path, or run from the root you want to scan.
 gpullall() {
   local script="$HOME/.zsh/scripts/gpullall"
-  if [[ ! -x "$script" ]]; then
-    echo "Missing executable: $script"
-    return 1
-  fi
-  "$script" "$@"
-}
-
-# Upgrade every outdated pip package in the current environment.
-pip-upgrade-all() {
-  local script="$HOME/.zsh/scripts/pip-upgrade-all"
   if [[ ! -x "$script" ]]; then
     echo "Missing executable: $script"
     return 1
