@@ -13,6 +13,9 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS
 
 export EDITOR='nvim'
+# Workaround for https://github.com/anthropics/claude-code/issues/64986
+# Remove once fixed upstream.
+[[ -n "$WSL_DISTRO_NAME" ]] && export BROWSER=wslview
 
 #### 2. Homebrew ############################################
 # Put this early so brew-installed tools are on PATH for everything below.
