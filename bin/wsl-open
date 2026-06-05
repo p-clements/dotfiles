@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Open a URL or file in the default Windows application.
+# WSL2 replacement for wslview (wslu, archived Mar 2025).
+exec powershell.exe -NoProfile -NonInteractive -Command "Start-Process '$*'"
