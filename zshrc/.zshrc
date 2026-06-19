@@ -13,9 +13,6 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_EXPIRE_DUPS_FIRST HIST_FIND_NO_DUPS
 
 export EDITOR='nvim'
-# Workaround for https://github.com/anthropics/claude-code/issues/64986
-# Remove once fixed upstream.
-[[ -n "$WSL_DISTRO_NAME" ]] && export BROWSER=wslview
 
 #### 2. Homebrew ############################################
 # Put this early so brew-installed tools are on PATH for everything below.
@@ -65,7 +62,7 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 #### 6. fzf #################################################
-[[ -t 0 && -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
+[[ -t 0 && -x "$(command -v fzf)" ]] && source <(fzf --zsh)
 
 #### 7. plugins #############################################
 # zsh-autosuggestions
