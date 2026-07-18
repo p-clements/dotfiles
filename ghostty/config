@@ -11,6 +11,7 @@ macos-option-as-alt = left
 font-family = "GeistMono NF"
 font-size = 14
 
-theme = Catppuccin Mocha
+#theme = Catppuccin Mocha
 #theme = Catppuccin Macchiato
+theme = Dracula
 #theme = TokyoNight
