@@ -88,6 +88,7 @@ alias ....='cd ../../..'
 # Run coding agents through Headroom's context-optimization proxy.
 alias hcodex='headroom wrap codex'
 alias hclaude='headroom wrap claude'
+alias hgrok='headroom wrap grok'
 
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza -lh --group-directories-first --icons=auto'
