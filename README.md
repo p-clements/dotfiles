@@ -10,6 +10,8 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 | `zshrc/scripts/gpullall` | Pulls all git repos under a root directory, with interactive branch cleanup |
 | `starship/starship.toml` | [Starship](https://starship.rs) prompt config using the Catppuccin Macchiato theme |
 | `ghostty/` | [Ghostty](https://ghostty.app) terminal themes and profiles |
+| `claude/settings.json` | [Claude Code](https://claude.com/claude-code) global settings (permissions, plugins, model, status line) |
+| `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars |
 
 ## Setup
 
@@ -34,6 +36,10 @@ ln -sfn ~/repos/dotfiles/starship/starship.toml ~/.config/starship.toml
 
 # Ghostty
 ln -sfn ~/repos/dotfiles/ghostty ~/.config/ghostty
+
+# Claude Code
+ln -sfn ~/repos/dotfiles/claude/settings.json ~/.claude/settings.json
+ln -sfn ~/repos/dotfiles/claude/statusline-command.sh ~/.claude/statusline-command.sh
 ```
 
 ## Additional files (not committed)
