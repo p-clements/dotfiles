@@ -49,5 +49,5 @@
   },
   "inputNeededNotifEnabled": true,
   "voiceEnabled": true,
-  "model": "sonnet[1m]"
+  "model": "sonnet"
 }
