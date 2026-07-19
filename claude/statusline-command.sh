@@ -21,7 +21,6 @@ cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
 model=$(echo "$input" | jq -r '.model.display_name // empty')
 model_id=$(echo "$input" | jq -r '.model.id // empty')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
-worktree=$(echo "$input" | jq -r '.workspace.git_worktree // empty')
 effort_level=$(echo "$input" | jq -r '.effort.level // empty')
 thinking_enabled=$(echo "$input" | jq -r '.thinking.enabled // empty')
 turn_count=$(echo "$input" | jq -r '.session.turn_count // empty')
@@ -64,11 +63,7 @@ if git_dir=$(git -C "$cwd" rev-parse --git-dir --no-optional-locks 2>/dev/null |
     [ "$ahead" -gt 0 ]  && status_flags="${status_flags}⇡${ahead}"
     [ "$behind" -gt 0 ] && status_flags="${status_flags}⇣${behind}"
 
-    if [ -n "$worktree" ]; then
-      git_info=" ${branch}${status_flags:+ $status_flags} [worktree:$worktree]"
-    else
-      git_info=" ${branch}${status_flags:+ $status_flags}"
-    fi
+    git_info=" ${branch}${status_flags:+ $status_flags}"
   fi
 fi
 
@@ -91,10 +86,11 @@ if [ -n "$effort_level" ] && [ "$effort_level" != "medium" ]; then
 fi
 
 # ── Thinking mode ────────────────────────────────────────────────────────────
-# Sourced from .thinking.enabled in the JSON payload. Uses nf-md-brain glyph (󰍹).
+# Sourced from .thinking.enabled in the JSON payload. Uses nf-md-brain glyph (󰧑, U+F09D1) —
+# the old codepoint here (U+F0379) was actually nf-md-monitor, not brain.
 thinking_display=""
 if [ "$thinking_enabled" = "true" ]; then
-  thinking_display=" 󰍹"
+  thinking_display=" 󰧑"
 fi
 
 # ── Assemble ─────────────────────────────────────────────────────────────────
