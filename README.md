@@ -4,14 +4,14 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 
 ## Contents
 
-| Path | Description |
-|------|-------------|
-| `zshrc/.zshrc` | Cross-platform Zsh config — Homebrew, plugins, aliases, and functions |
-| `zshrc/scripts/gpullall` | Pulls all git repos under a root directory, with interactive branch cleanup |
-| `starship/starship.toml` | [Starship](https://starship.rs) prompt config using the Catppuccin Macchiato theme |
-| `ghostty/` | [Ghostty](https://ghostty.app) terminal themes and profiles |
-| `claude/settings.json` | [Claude Code](https://claude.com/claude-code) global settings (permissions, plugins, model, status line) |
-| `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars |
+| Path                           | Description                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `zshrc/.zshrc`                 | Cross-platform Zsh config — Homebrew, plugins, aliases, and functions                                    |
+| `zshrc/scripts/gpullall`       | Pulls all git repos under a root directory, with interactive branch cleanup                              |
+| `starship/starship.toml`       | [Starship](https://starship.rs) prompt config using the Catppuccin Macchiato theme                       |
+| `ghostty/`                     | [Ghostty](https://ghostty.app) terminal themes and profiles                                              |
+| `claude/settings.json`         | [Claude Code](https://claude.com/claude-code) global settings (permissions, plugins, model, status line) |
+| `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars                      |
 
 ## Setup
 
