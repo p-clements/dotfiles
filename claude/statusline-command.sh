@@ -22,7 +22,6 @@ model=$(echo "$input" | jq -r '.model.display_name // empty')
 model_id=$(echo "$input" | jq -r '.model.id // empty')
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 effort_level=$(echo "$input" | jq -r '.effort.level // empty')
-thinking_enabled=$(echo "$input" | jq -r '.thinking.enabled // empty')
 turn_count=$(echo "$input" | jq -r '.session.turn_count // empty')
 rate_limit_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 rate_limit_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.reset_at // empty')
@@ -85,14 +84,6 @@ if [ -n "$effort_level" ] && [ "$effort_level" != "medium" ]; then
   effort_display=" ${effort_level}"
 fi
 
-# ── Thinking mode ────────────────────────────────────────────────────────────
-# Sourced from .thinking.enabled in the JSON payload. Uses nf-md-brain glyph (󰧑, U+F09D1) —
-# the old codepoint here (U+F0379) was actually nf-md-monitor, not brain.
-thinking_display=""
-if [ "$thinking_enabled" = "true" ]; then
-  thinking_display=" 󰧑"
-fi
-
 # ── Assemble ─────────────────────────────────────────────────────────────────
 parts=""
 
@@ -114,9 +105,6 @@ fi
 
 # Effort level — hidden when "medium" or absent
 [ -n "$effort_display" ] && parts="${parts}$(printf "${YELLOW}${effort_display}${RESET}")"
-
-# Thinking mode — nf-md-brain glyph
-[ -n "$thinking_display" ] && parts="${parts}$(printf "${MAUVE}${thinking_display}${RESET}")"
 
 # Context bar
 if [ -n "$ctx_display" ]; then
