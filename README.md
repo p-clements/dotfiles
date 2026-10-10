@@ -12,6 +12,7 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 | `ghostty/`                     | [Ghostty](https://ghostty.app) terminal themes and profiles                                              |
 | `claude/settings.json`         | [Claude Code](https://claude.com/claude-code) global settings (permissions, plugins, model, status line) |
 | `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars                      |
+| `solaar/`                      | Logitech MX Keys S key setup for Omarchy — `rules.yaml` (emoji, dictation, screenshot, lock) + `apply.sh` |
 
 ## Setup
 
@@ -40,6 +41,9 @@ ln -sfn ~/repos/dotfiles/ghostty ~/.config/ghostty
 # Claude Code
 ln -sfn ~/repos/dotfiles/claude/settings.json ~/.claude/settings.json
 ln -sfn ~/repos/dotfiles/claude/statusline-command.sh ~/.claude/statusline-command.sh
+
+# Solaar (Omarchy/Linux, MX Keys S) — links rules.yaml and diverts the keys
+~/repos/dotfiles/solaar/apply.sh
 ```
 
 ## Additional files (not committed)
