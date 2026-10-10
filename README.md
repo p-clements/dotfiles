@@ -13,6 +13,7 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 | `claude/settings.json`         | [Claude Code](https://claude.com/claude-code) global settings (permissions, plugins, model, status line) |
 | `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars                      |
 | `solaar/`                      | Logitech MX Keys S key setup for Omarchy — `rules.yaml` (emoji, dictation, screenshot, lock) + `apply.sh` |
+| `omarchy/`                    | Omarchy (Arch/Hyprland) customisations — Hyprland keyboard/bindings/autostart, terminals, herdr, bar config, `apply.sh` |
 
 ## Setup
 
@@ -45,6 +46,42 @@ ln -sfn ~/repos/dotfiles/claude/statusline-command.sh ~/.claude/statusline-comma
 # Solaar (Omarchy/Linux, MX Keys S) — links rules.yaml and diverts the keys
 ~/repos/dotfiles/solaar/apply.sh
 ```
+
+## Omarchy (Linux) — restoring after a reinstall
+
+Everything specific to my Omarchy desktop lives in `omarchy/`. After a fresh Omarchy install, clone the repo and run:
+
+```bash
+~/Work/repos/dotfiles/omarchy/apply.sh   # links/copies everything below
+~/Work/repos/dotfiles/solaar/apply.sh    # MX Keys S keys (needs Solaar; see below)
+```
+
+`apply.sh` moves any existing file aside as `<name>.pre-dotfiles` before linking.
+
+**Symlinked** (edit in place; the repo is always current):
+
+| Repo file                          | Symlink target                    | What it holds                                         |
+| ---------------------------------- | --------------------------------- | ----------------------------------------------------- |
+| `omarchy/hypr/input.lua`           | `~/.config/hypr/input.lua`        | Swiss French keyboard layout (`ch` / `fr`)            |
+| `omarchy/hypr/bindings.lua`        | `~/.config/hypr/bindings.lua`     | Numeric-keypad workspace bindings                     |
+| `omarchy/hypr/autostart.lua`       | `~/.config/hypr/autostart.lua`    | Starts Solaar hidden at login                         |
+| `omarchy/foot/foot.ini`            | `~/.config/foot/foot.ini`         | GeistMono font, right-click paste, selection to both  |
+| `omarchy/alacritty/alacritty.toml` | `~/.config/alacritty/alacritty.toml` | GeistMono font                                     |
+| `omarchy/kitty/kitty.conf`         | `~/.config/kitty/kitty.conf`      | GeistMono font                                        |
+| `omarchy/ghostty/config`           | `~/.config/ghostty/config`        | GeistMono font (the top-level `ghostty/` dir is the macOS/WSL profile) |
+| `omarchy/herdr/config.toml`        | `~/.config/herdr/config.toml`     | `agent_panel_sort = "priority"`                       |
+| `starship/starship.toml`           | `~/.config/starship.toml`         | Shared prompt (see Setup above)                       |
+
+**Copied, not linked** (the app rewrites these, which would replace a symlink). After changing one, run `omarchy/apply.sh pull` and commit:
+
+| Repo file                                  | Copied to                                  | What it holds                                   |
+| ------------------------------------------ | ------------------------------------------ | ----------------------------------------------- |
+| `omarchy/shell/shell.json`                 | `~/.config/omarchy/shell.json`             | Transparent bar, Tailscale module, pinned 1Password tray icon |
+| `omarchy/autostart/*.desktop`              | `~/.config/autostart/`                     | 1Password and Remmina autostart                 |
+
+**Solaar (MX Keys S):** install `solaar`, then run `solaar/apply.sh`. It diverts the emoji, dictation, screenshot and lock keys and links `~/.config/solaar/rules.yaml`. It does not touch `Super+L`, `Super+Shift+S` or any other Omarchy default.
+
+**Deliberately not tracked:** `hypr/monitors.lua` (experimenting with Sunshine), `git/config` (identity is `Peter` / the GitHub noreply address; set it with `git config --global`), Omarchy's own hooks, and the herdr-managed `opencode` plugin files.
 
 ## Additional files (not committed)
 
