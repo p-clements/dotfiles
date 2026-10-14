@@ -65,6 +65,9 @@ Everything specific to my Omarchy desktop lives in `omarchy/`. After a fresh Oma
 | `omarchy/hypr/input.lua`           | `~/.config/hypr/input.lua`        | Swiss French keyboard layout (`ch` / `fr`)            |
 | `omarchy/hypr/bindings.lua`        | `~/.config/hypr/bindings.lua`     | Numeric-keypad workspace bindings                     |
 | `omarchy/hypr/autostart.lua`       | `~/.config/hypr/autostart.lua`    | Starts Solaar hidden at login                         |
+| `omarchy/hypr/monitors.lua`        | `~/.config/hypr/monitors.lua`     | Monitor layout; switches to the stream layout while `$XDG_RUNTIME_DIR/sunshine-streaming` exists |
+| `omarchy/sunshine/virtual-display.sh` | `~/.config/sunshine/virtual-display.sh` | Sunshine "Mac Desktop" prep command: `on` / `off` / `restore` / `status` (see below) |
+| `omarchy/sunshine/sunshine-stream-watchdog.sh` | `~/.config/sunshine/sunshine-stream-watchdog.sh` | Restores the physical monitor if a stream is abandoned |
 | `omarchy/foot/foot.ini`            | `~/.config/foot/foot.ini`         | GeistMono font, right-click paste, selection to both  |
 | `omarchy/alacritty/alacritty.toml` | `~/.config/alacritty/alacritty.toml` | GeistMono font                                     |
 | `omarchy/kitty/kitty.conf`         | `~/.config/kitty/kitty.conf`      | GeistMono font                                        |
@@ -78,6 +81,12 @@ Everything specific to my Omarchy desktop lives in `omarchy/`. After a fresh Oma
 | ------------------------------------------ | ------------------------------------------ | ----------------------------------------------- |
 | `omarchy/shell/shell.json`                 | `~/.config/omarchy/shell.json`             | Transparent bar, Tailscale module, pinned 1Password tray icon |
 | `omarchy/autostart/*.desktop`              | `~/.config/autostart/`                     | 1Password and Remmina autostart                 |
+| `omarchy/sunshine/apps.json`               | `~/.config/sunshine/apps.json`             | Sunshine apps; "Mac Desktop" runs `virtual-display.sh on/off` |
+| `omarchy/systemd/*.service`, `*.d/*.conf`  | `~/.config/systemd/user/`                  | Stream watchdog unit and Sunshine start-up drop-in |
+
+### Sunshine / Moonlight virtual display
+
+Streaming to the Mac uses a headless output (`SUNSHINE-V`). `virtual-display.sh on` switches Hyprland to that output (physical `DP-1` off, all workspaces move over); `off` switches back. Sunshine only runs `off` when the app quits, not when Moonlight just disconnects, so `sunshine-stream-watchdog` restores the physical monitor if a stream is abandoned for 5 minutes, and the Sunshine drop-in runs `off` on every Sunshine start. Emergency restore from SSH or a TTY: `~/.config/sunshine/virtual-display.sh restore`. After `apply.sh` on a new machine, enable the watchdog (the script prints the commands). Never run `hyprctl reload` mid-stream on an older copy of this setup; the flag file in `monitors.lua` is what makes it safe here.
 
 **Solaar (MX Keys S):** install `solaar`, then run `solaar/apply.sh`. It diverts the emoji, dictation, screenshot and lock keys and links `~/.config/solaar/rules.yaml`. It does not touch `Super+L`, `Super+Shift+S` or any other Omarchy default.
 

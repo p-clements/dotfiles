@@ -1,0 +1,14 @@
+# Install as ~/.config/systemd/user/sunshine-stream-watchdog.service
+[Unit]
+Description=Restore the physical display after an abandoned Sunshine stream
+After=graphical-session.target app-dev.lizardbyte.app.Sunshine.service
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.config/sunshine/sunshine-stream-watchdog.sh
+Environment=SUNSHINE_RESTORE_GRACE=300
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
