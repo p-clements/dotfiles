@@ -1,2 +1,5 @@
 .zshrc.local
 .DS_Store
+
+# Local agent checkouts are separate Git worktrees.
+.claude/worktrees/

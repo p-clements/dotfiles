@@ -14,6 +14,7 @@ Personal dotfiles for a consistent, version-controlled terminal and development 
 | `claude/statusline-command.sh` | Custom Claude Code status line — dir/git, model + context badge, context/usage bars                      |
 | `solaar/`                      | Logitech MX Keys S key setup for Omarchy — `rules.yaml` (emoji, dictation, screenshot, lock) + `apply.sh` |
 | `omarchy/`                    | Omarchy (Arch/Hyprland) customisations — Hyprland keyboard/bindings/autostart, terminals, herdr, bar config, `apply.sh` |
+| `macos/herdr/`                | Mac Herdr client profile based on Omarchy, with Ctrl+B prefix and prefix+arrow pane navigation |
 
 ## Setup
 
@@ -45,7 +46,16 @@ ln -sfn ~/repos/dotfiles/claude/statusline-command.sh ~/.claude/statusline-comma
 
 # Solaar (Omarchy/Linux, MX Keys S) — links rules.yaml and diverts the keys
 ~/repos/dotfiles/solaar/apply.sh
+
+# Herdr (macOS) — backs up the existing config and symlinks the Mac profile
+bash ~/repos/dotfiles/macos/herdr/apply.sh
 ```
+
+The Mac Herdr profile links `macos/herdr/config.toml` to
+`~/.config/herdr/config.toml`. It keeps Omarchy's action bindings, uses
+`Ctrl+B` as the prefix, and adds prefix+arrow shortcuts for pane focus.
+Connect with `herdr --remote pclements@omarchy --remote-keybindings local`;
+detach with `Ctrl+B`, release, then `d`. The installer can be run repeatedly.
 
 ## Omarchy (Linux) — restoring after a reinstall
 
@@ -110,3 +120,9 @@ export GIT_COMMITTER_EMAIL="you@example.com"
 - Starship uses the `catppuccin_macchiato` palette by default. Change the palette in `starship.toml` to switch flavour.
 
 - Plugins (zsh-autosuggestions, zsh-syntax-highlighting) are loaded from Homebrew on macOS or `/usr/share` on Linux — install with `brew install zsh-autosuggestions zsh-syntax-highlighting` or `apt install` equivalents.
+
+## Current Omarchy restore point
+
+For the broader live desktop snapshot and restore instructions, see
+[omarchy/backup/README.md](omarchy/backup/README.md). This includes settings outside
+the legacy symlink installer.
