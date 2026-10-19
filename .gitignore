@@ -3,3 +3,6 @@
 
 # Local agent checkouts are separate Git worktrees.
 .claude/worktrees/
+
+# Python backup tooling bytecode
+__pycache__/

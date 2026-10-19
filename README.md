@@ -57,41 +57,24 @@ The Mac Herdr profile links `macos/herdr/config.toml` to
 Connect with `herdr --remote pclements@omarchy --remote-keybindings local`;
 detach with `Ctrl+B`, release, then `d`. The installer can be run repeatedly.
 
-## Omarchy (Linux) — restoring after a reinstall
+## Omarchy (Linux) — personal settings
 
-Everything specific to my Omarchy desktop lives in `omarchy/`. After a fresh Omarchy install, clone the repo and run:
+The [curated settings guide](omarchy/backup/README.md) explains ownership,
+capture and restore. One reviewed list covers 27 personal configuration and
+preference files. Omarchy defaults, installed plugins and generated state are
+recreated by their owning tools; package/plugin/theme choices are reference
+inventories.
 
 ```bash
-~/Work/repos/dotfiles/omarchy/apply.sh   # links/copies everything below
-~/Work/repos/dotfiles/solaar/apply.sh    # MX Keys S keys (needs Solaar; see below)
+bash omarchy/apply.sh pull          # preview capture
+bash omarchy/apply.sh pull --apply  # capture reviewed files
+bash omarchy/apply.sh               # preview restore
+bash omarchy/apply.sh --apply       # restore copies, backing up replaced files
 ```
 
-`apply.sh` moves any existing file aside as `<name>.pre-dotfiles` before linking.
-
-**Symlinked** (edit in place; the repo is always current):
-
-| Repo file                          | Symlink target                    | What it holds                                         |
-| ---------------------------------- | --------------------------------- | ----------------------------------------------------- |
-| `omarchy/hypr/input.lua`           | `~/.config/hypr/input.lua`        | Swiss French keyboard layout (`ch` / `fr`)            |
-| `omarchy/hypr/bindings.lua`        | `~/.config/hypr/bindings.lua`     | Numeric-keypad workspace bindings                     |
-| `omarchy/hypr/autostart.lua`       | `~/.config/hypr/autostart.lua`    | Starts Solaar hidden at login                         |
-| `omarchy/foot/foot.ini`            | `~/.config/foot/foot.ini`         | GeistMono font, right-click paste, selection to both  |
-| `omarchy/alacritty/alacritty.toml` | `~/.config/alacritty/alacritty.toml` | GeistMono font                                     |
-| `omarchy/kitty/kitty.conf`         | `~/.config/kitty/kitty.conf`      | GeistMono font                                        |
-| `omarchy/ghostty/config`           | `~/.config/ghostty/config`        | GeistMono font (the top-level `ghostty/` dir is the macOS/WSL profile) |
-| `omarchy/herdr/config.toml`        | `~/.config/herdr/config.toml`     | `agent_panel_sort = "priority"`                       |
-| `starship/starship.toml`           | `~/.config/starship.toml`         | Shared prompt (see Setup above)                       |
-
-**Copied, not linked** (the app rewrites these, which would replace a symlink). After changing one, run `omarchy/apply.sh pull` and commit:
-
-| Repo file                                  | Copied to                                  | What it holds                                   |
-| ------------------------------------------ | ------------------------------------------ | ----------------------------------------------- |
-| `omarchy/shell/shell.json`                 | `~/.config/omarchy/shell.json`             | Transparent bar, Tailscale module, pinned 1Password tray icon |
-| `omarchy/autostart/*.desktop`              | `~/.config/autostart/`                     | 1Password and Remmina autostart                 |
-
-**Solaar (MX Keys S):** install `solaar`, then run `solaar/apply.sh`. It diverts the emoji, dictation, screenshot and lock keys and links `~/.config/solaar/rules.yaml`. It does not touch `Super+L`, `Super+Shift+S` or any other Omarchy default.
-
-**Deliberately not tracked:** `hypr/monitors.lua` (experimenting with Sunshine), `git/config` (identity is `Peter` / the GitHub noreply address; set it with `git config --global`), Omarchy's own hooks, and the herdr-managed `opencode` plugin files.
+Restore with the graphical session logged out; review the guide first. Both
+operations leave live services alone. Run `bash solaar/apply.sh` separately to
+recreate MX Keys action-key diversions.
 
 ## Additional files (not committed)
 
@@ -120,9 +103,3 @@ export GIT_COMMITTER_EMAIL="you@example.com"
 - Starship uses the `catppuccin_macchiato` palette by default. Change the palette in `starship.toml` to switch flavour.
 
 - Plugins (zsh-autosuggestions, zsh-syntax-highlighting) are loaded from Homebrew on macOS or `/usr/share` on Linux — install with `brew install zsh-autosuggestions zsh-syntax-highlighting` or `apt install` equivalents.
-
-## Current Omarchy restore point
-
-For the broader live desktop snapshot and restore instructions, see
-[omarchy/backup/README.md](omarchy/backup/README.md). This includes settings outside
-the legacy symlink installer.
