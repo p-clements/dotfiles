@@ -6,3 +6,8 @@
 
 # Python backup tooling bytecode
 __pycache__/
+
+# Private desktop settings live in a separate repository.
+/omarchy
+/solaar
+/macos/herdr
